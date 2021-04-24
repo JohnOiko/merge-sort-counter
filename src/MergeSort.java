@@ -6,58 +6,94 @@ import java.util.Arrays;
 public class MergeSort {
 
     public static void main(String[] args) {
+        //Read numbers from file.
         try (BufferedReader reader = new BufferedReader(new FileReader(args[0]))) {
             String input;
             ArrayList<String> numbers = new ArrayList<>();
+            /* While EOF hasn't been reached, split the next line with " " and add it as a
+            String Arraylist to the Arraylist Numbers that holds the inputted numbers as Strings. */
             while ((input = reader.readLine()) != null) {
                 numbers.addAll(Arrays.asList(input.split(" ")));
             }
+            /* Calculate and print the cost by passing the Arraylist Numbers as an array of Strings
+            to the function MergeSortCost(String[] array). */
             System.out.println("Total cost: " + MergeSortCost(numbers.toArray(new String[0])));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static int MergeSortCost(String[] array) {
-        int count = 0;
+    /* Function that calculates and returns the cost of sorting the String array it accepts as parameter
+    using a modified version of MergeSort. */
+    private static int MergeSortCost(String[] array) {
+        int cost = 0;
+        //If the given array has 0 or 1 elements, return 0 as the cost.
         if (array.length < 2) return 0;
+        //If array has at least 2 elements, calculate the cost of sorting it.
         else {
-            String[] A = Arrays.copyOf(array, array.length/2);
-            String[] B = Arrays.copyOfRange(array, array.length/2, array.length);
-            count += MergeSortCost(A);
-            count += MergeSortCost(B);
+            /* The first half of the array is stored in firstHalf using Arrays.copyOf and
+            the second half is stored in secondHalf using Arrays.copyOfRange. */
+            String[] firstHalf = Arrays.copyOf(array, array.length/2);
+            String[] secondHalf = Arrays.copyOfRange(array, array.length/2, array.length);
+            /* Recursively calculate the cost of the first and second halves and add it to the
+            total cost. */
+            cost += MergeSortCost(firstHalf);
+            cost += MergeSortCost(secondHalf);
+            //i is the index of the first half and j is the index of the seconds half.
             int i = 0, j = 0;
-            while ((i < A.length) && (j < B.length)) {
-                if (Integer.parseInt(A[i]) < Integer.parseInt(B[j])) {
-                    array[i + j] = A[i];
+            //Merge the two halves until one of the halves becomes empty.
+            while ((i < firstHalf.length) && (j < secondHalf.length)) {
+                /* If the element of the first half is less then the element of the second half,
+                store it in the array passed as parameter and increment its index. */
+                if (Integer.parseInt(firstHalf[i]) < Integer.parseInt(secondHalf[j])) {
+                    array[i + j] = firstHalf[i];
                     i++;
                 }
+                /* Else if the element of the first half is greater than or equal to the element of the second half, adjust
+                the cost, store element of the first half in the array passed as parameter and increment its index. */
                 else {
-                    if (Math.abs(Integer.parseInt(A[i]) - Integer.parseInt(B[j])) > 1) count += 3;
-                    else if (Math.abs(Integer.parseInt(A[i]) - Integer.parseInt(B[j])) == 1) count += 2;
-                    array[i + j] = B[j];
+                    /* Since the element of the first half is greater or equal than the element of the second,
+                    we have Α_Ι > A_J, while i < j. */
+                    // If firstHalf[i] - secondHalf[j] > 1, add 3 to the cost.
+                    if (Integer.parseInt(firstHalf[i]) - Integer.parseInt(secondHalf[j]) > 1) cost += 3;
+                    // Else if firstHalf[i] - secondHalf[j] = 1, add 2 to the cost.
+                    else if (Integer.parseInt(firstHalf[i]) - Integer.parseInt(secondHalf[j]) == 1) cost += 2;
+                    array[i + j] = secondHalf[j];
                     j++;
                 }
             }
-            if (i == A.length) {
+            /* If the first half is empty, copy the rest of the elements of the second half to the array passed
+            as parameter. */
+            if (i == firstHalf.length) {
                 while (i + j < array.length) {
-                    array[i + j] = B[j];
+                    array[i + j] = secondHalf[j];
                     j++;
                 }
             }
-            else if (j == B.length) {
-                array[i + j] = A[i];
+            /* Else if the second half is empty, adjust the cost and copy the rest of the elements of the first
+            half to the array passed as parameter. */
+            else if (j == secondHalf.length) {
+                /* Copy the first of the remaining elements of the first half to the array passed as parameter
+                without adjusting the cost since it was already accounted for by comparing it to the last element
+                of the second half. */
+                array[i + j] = firstHalf[i];
                 i++;
-                while (i < A.length) {
+                /* For the rest of the elements of the first half, compare them to all the elements of the second half,
+                adjust the cost and copy the first half element to the array passed as parameter (since we know that all
+                of the rest of the elements of the first half are greater than all the elements of the second half). */
+                while (i < firstHalf.length) {
                     for (int k = j - 1 ; k >= 0 ; k--) {
-                        if (Math.abs(Integer.parseInt(A[i]) - Integer.parseInt(B[k])) > 1) count += 3;
-                        else if (Math.abs(Integer.parseInt(A[i]) - Integer.parseInt(B[k])) == 1) count += 2;
+                        // Since we know the above, we have Α_Ι > A_K, while i < k.
+                        // If firstHalf[i] - secondHalf[k] > 1, add 3 to the cost.
+                        if (Integer.parseInt(firstHalf[i]) - Integer.parseInt(secondHalf[k]) > 1) cost += 3;
+                        // Else if firstHalf[i] - secondHalf[k] = 1, add 2 to the cost.
+                        else if (Integer.parseInt(firstHalf[i]) - Integer.parseInt(secondHalf[k]) == 1) cost += 2;
                     }
-                    array[i + j] = A[i];
+                    array[i + j] = firstHalf[i];
                     i++;
                 }
             }
         }
-        return count;
+        return cost;
     }
 }
