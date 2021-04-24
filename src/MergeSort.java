@@ -6,18 +6,16 @@ import java.util.Arrays;
 public class MergeSort {
 
     public static void main(String[] args) {
-        String[] numbers = {};
         try (BufferedReader reader = new BufferedReader(new FileReader(args[0]))) {
             String input;
+            ArrayList<String> numbers = new ArrayList<>();
             while ((input = reader.readLine()) != null) {
-                ArrayList<String> temp = new ArrayList<>(Arrays.asList(numbers));
-                temp.addAll(Arrays.asList(input.split(" ")));
-                numbers = temp.toArray(new String[0]);
+                numbers.addAll(Arrays.asList(input.split(" ")));
             }
+            System.out.println("Total cost: " + MergeSortCost(numbers.toArray(new String[0])));
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println("Total cost: " + MergeSortCost(numbers));
     }
 
     public static int MergeSortCost(String[] array) {
