@@ -17,7 +17,9 @@ public class MergeSort {
             }
             /* Calculate and print the cost by passing the Arraylist Numbers as an array of Strings
             to the function MergeSortCost(String[] array). */
+            long exeTime = System.nanoTime();
             System.out.println("Total cost: " + MergeSortCost(numbers.toArray(new String[0])));
+            System.out.println((System.nanoTime() - exeTime)/1000000.0 + "ms");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -82,12 +84,20 @@ public class MergeSort {
                 adjust the cost and copy the first half element to the array passed as parameter (since we know that all
                 of the rest of the elements of the first half are greater than all the elements of the second half). */
                 while (i < firstHalf.length) {
-                    for (int k = j - 1 ; k >= 0 ; k--) {
-                        // Since we know the above, we have Α_Ι > A_K, while i < k.
-                        // If firstHalf[i] - secondHalf[k] > 1, add 3 to the cost.
-                        if (Integer.parseInt(firstHalf[i]) - Integer.parseInt(secondHalf[k]) > 1) cost += 3;
-                        // Else if firstHalf[i] - secondHalf[k] = 1, add 2 to the cost.
-                        else if (Integer.parseInt(firstHalf[i]) - Integer.parseInt(secondHalf[k]) == 1) cost += 2;
+                    // Since we know the above, we have Α_Ι > A_K, while i < k.
+                    int k = j - 1;
+                    boolean flag = true;
+                    while (k >= 0 && flag) {
+                        // If firstHalf[i] - secondHalf[k] = 1, add 2 to the cost.
+                        if (Integer.parseInt(firstHalf[i]) - Integer.parseInt(secondHalf[k]) == 1)  cost += 2;
+                        /* Else if firstHalf[i] - secondHalf[k] > 1, add 3 * (the amount of elements left in the second
+                        half) to the cost (since the second half is already sorted we know that the remaining elements
+                        are less than secondHalf[k]) and exit the loop by changing the flag. */
+                        else if (Integer.parseInt(firstHalf[i]) - Integer.parseInt(secondHalf[k]) > 1) {
+                            cost += 3 * (k + 1);
+                            flag = false;
+                        }
+                        k--;
                     }
                     array[i + j] = firstHalf[i];
                     i++;
