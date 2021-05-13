@@ -3,6 +3,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+// Main class that reads the numbers from the file and prints the cost of ordering them.
 public class MergeSort {
     public static void main(String[] args) {
         // Read numbers from file using a Scanner.
@@ -27,7 +28,8 @@ public class MergeSort {
         // If the Arraylist numbers has 1 or 0 elements, break the recursion and return 0 as cost.
         if (end - start <= 1) return 0;
 
-        // Initialize cost to 0 and add to it the costs of the left and right parts of the Arraylist numbers using recursion.
+        // Initialize cost to 0 and add to it the costs of the left (first) and right (second) halves of the Arraylist numbers
+        // using recursion.
         long cost = 0;
         cost += MergeSortCost(numbers, start, mid);
         cost += MergeSortCost(numbers, mid, end);
@@ -45,7 +47,7 @@ public class MergeSort {
                 // Since numbers[i] > numbers[j] and the first half is already in ascending order, the numbers from i + 1 to mid
                 // are all more than numbers[i] and thus more than numbers[j]. Also, because numbers[i] - numbers[j] = 1, a while
                 // loop adds 2 to the cost while numbers[k] = numbers[i] for k = i, ..., i + 1, ..., mid. Once numbers[k] != numbers[i],
-                // 3 * (the amount of the rest of the elements of the first half which are at k < index < mid) is added to the cost
+                // 3 * (the amount of the rest of the elements of the first half which are at k <= index <= mid) is added to the cost
                 // and the flag becomes false to break the loop.
                 boolean flag = true;
                 int k = i;
@@ -56,7 +58,7 @@ public class MergeSort {
                         k++;
                     }
                     // Else if numbers[k] != numbers[i], add 3 * (the amount of the rest of the elements of the first half which are at
-                    // k < index < mid) to the cost and make the flag false to break the loop.
+                    // k <= index <= mid) to the cost and make the flag false to break the loop.
                     else {
                         cost += 3L * (mid - k);
                         flag = false;
@@ -70,7 +72,7 @@ public class MergeSort {
             }
             // Else if numbers[i] - numbers[j] > 1, since numbers[i] > numbers[j] and the first half is already in ascending order, the
             // numbers from i + 1 to mid are all larger than numbers[j] by at least 2. Thus, 3 * (the amount of the rest of the elements
-            // of the first half which are at k < index < mid) is added to the cost and numbers[j] is added to the Arraylist merged,
+            // of the first half which are at i <= index <= mid) is added to the cost and numbers[j] is added to the Arraylist merged,
             // because it's less than numbers[i]. Also, since we added an element from the second half to the Arraylist merged, move
             // on to the next element of the second half by increasing j by 1.
             else if (dif > 1) {
